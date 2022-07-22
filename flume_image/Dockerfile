@@ -13,7 +13,7 @@ RUN set -ex && \
     # echo 'deb-src http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib' >> /etc/apt/sources.list && \
     apt-get update && \
     ln -s /lib /lib64 && \
-    apt install -y bash tini libc6 libpam-modules krb5-user libnss3 iputils-ping curl && \
+    apt install -y bash tini libc6 libpam-modules libnss3 iputils-ping curl && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     curl -L https://dlcdn.apache.org/flume/1.10.0/apache-flume-1.10.0-bin.tar.gz | tar zxC /opt && \

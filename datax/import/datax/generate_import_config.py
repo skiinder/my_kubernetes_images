@@ -16,7 +16,6 @@ mysql_passwd = os.getenv("MYSQL_PASSWORD")
 # hdfs_nn_port = "8020"
 # HIVE输出路径
 hive_output_dir = os.getenv("HIVE_OUTPUT_DIR")
-do_date = os.getenv("DO_DATE")
 redis_host = os.getenv("REDIS_HOST")
 default_fs = os.getenv("DEFAULT_FS")
 
@@ -100,7 +99,7 @@ def generate_json(source_database, source_table):
                     "parameter": {
                         "defaultFS": default_fs,
                         "fileType": "text",
-                        "path": "/".join([hive_output_dir, source_table + "_full", do_date]),
+                        "path": hive_output_dir,
                         "fileName": source_table,
                         "column": get_hive_columns(source_database, source_table),
                         "writeMode": "append",
