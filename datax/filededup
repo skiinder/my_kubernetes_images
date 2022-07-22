@@ -24,7 +24,6 @@ do
   else
     t_file="$o_file"
     t_md5sum="$o_md5sum"
-    echo "$t_file"
   fi
 done
 rm -rf md5sum.txt
