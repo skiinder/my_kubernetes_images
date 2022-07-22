@@ -6,9 +6,7 @@ RUN cd /opt/datax/plugin/reader/hdfsreader/libs && \
     ln -s ../../../reader/hdfsreader/libs/juicefs-hadoop-1.0.0-rc3.jar
 
 COPY datax /opt/datax
-
-RUN chmod +x entrypoint.sh generate_import_config.py
-
 WORKDIR /opt/datax
+RUN chmod +x entrypoint.sh generate_import_config.py
 
 ENTRYPOINT [ "./entrypoint.sh" ]
