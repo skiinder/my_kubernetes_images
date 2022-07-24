@@ -9,9 +9,16 @@ RUN set -ex && \
     apt-get update && \
     ln -s /lib /lib64 && \
     apt install -y bash tini libc6 libpam-modules krb5-user libnss3 && \
-	curl -L https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-without-hadoop.tgz | tar zx && \
+    curl -L https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-without-hadoop.tgz | tar zxC /opt && \
     mkdir -p /opt/spark && \
-    mkdir -p /opt/spark/examples && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/jars /opt/spark/jars && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/bin /opt/spark/bin && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/sbin /opt/spark/sbin && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/kubernetes/dockerfiles/spark/entrypoint.sh /opt/ && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/examples /opt/spark/examples && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/kubernetes/tests /opt/spark/tests && \
+    mv /opt/spark-3.0.0-bin-without-hadoop/data /opt/spark/data && \
+    rm -rf /opt/spark-3.0.0-bin-without-hadoop && \
     mkdir -p /opt/spark/work-dir && \
     touch /opt/spark/RELEASE && \
     rm /bin/sh && \
@@ -19,14 +26,6 @@ RUN set -ex && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     chgrp root /etc/passwd && chmod ug+rw /etc/passwd && \
     rm -rf /var/cache/apt/*
-
-COPY spark-3.0.0-bin-without-hadoop/jars /opt/spark/jars
-COPY spark-3.0.0-bin-without-hadoop/bin /opt/spark/bin
-COPY spark-3.0.0-bin-without-hadoop/sbin /opt/spark/sbin
-COPY spark-3.0.0-bin-without-hadoop/kubernetes/dockerfiles/spark/entrypoint.sh /opt/
-COPY spark-3.0.0-bin-without-hadoop/examples /opt/spark/examples
-COPY spark-3.0.0-bin-without-hadoop/kubernetes/tests /opt/spark/tests
-COPY spark-3.0.0-bin-without-hadoop/data /opt/spark/data
 
 ENV SPARK_HOME /opt/spark
 
