@@ -8,7 +8,7 @@ RUN set -ex && \
     sed -i 's/http:/https:/g' /etc/apt/sources.list && \
     apt-get update && \
     ln -s /lib /lib64 && \
-    apt install -y bash tini libc6 libpam-modules krb5-user libnss3 && \
+    apt install -y bash tini libc6 libpam-modules krb5-user libnss3 curl iputils-ping net-tools  && \
     curl -L https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz | tar zxC /opt && \
     mkdir -p /opt/spark && \
     mv /opt/spark-3.0.0-bin-hadoop3.2/jars /opt/spark/jars && \
