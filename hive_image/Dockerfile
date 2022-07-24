@@ -12,6 +12,7 @@ RUN curl -L https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.
 	ls -s /opt/hive/conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 
 COPY jars /opt/hive/lib
+COPY entrypoint.sh /opt
 
 ENV HADOOP_HOME=/opt/hadoop
 ENV HIVE_HOME=/opt/hive
