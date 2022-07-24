@@ -32,6 +32,8 @@ RUN set -ex && \
     rm -rf /opt/spark/jars/hive-shims-common-2.3.7.jar && \
     rm -rf /opt/spark/jars/hive-shims-scheduler-2.3.7.jar && \
     rm -rf /opt/spark/jars/hive-vector-code-gen-2.3.7.jar && \
+	cd /opt/spark/jars/ && \
+	curl -LO https://github.com/juicedata/juicefs/releases/download/v1.0.0-rc3/juicefs-hadoop-1.0.0-rc3.jar && \
     mkdir -p /opt/spark/work-dir && \
     touch /opt/spark/RELEASE && \
     rm /bin/sh && \

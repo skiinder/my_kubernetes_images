@@ -22,8 +22,10 @@ RUN set -ex && \
     curl -L https://dlcdn.apache.org/dolphinscheduler/2.0.6/apache-dolphinscheduler-2.0.6-bin.tar.gz | tar -zxC /opt && \
     mv /opt/apache-dolphinscheduler-2.0.6-bin /opt/dolphinscheduler && \
     find /root/build/dolphinscheduler | grep 'sh$' | sed -i '/^ *source/s/^/#/' && \
+	cd /usr/bin && \
     curl -LO "https://dl.k8s.io/release/v1.23.7/bin/linux/amd64/kubectl" && \
-    mv kubectl /usr/bin
+    cd /opt/dolphinscheduler/lib && \
+	curl -LO https://github.com/juicedata/juicefs/releases/download/v1.0.0-rc3/juicefs-hadoop-1.0.0-rc3.jar
 
 COPY dolphinscheduler /opt/dolphinscheduler
 
