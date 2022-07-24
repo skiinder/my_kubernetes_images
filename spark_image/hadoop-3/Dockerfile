@@ -19,6 +19,19 @@ RUN set -ex && \
     mv /opt/spark-3.0.0-bin-hadoop3.2/kubernetes/tests /opt/spark/tests && \
     mv /opt/spark-3.0.0-bin-hadoop3.2/data /opt/spark/data && \
     rm -rf /opt/spark-3.0.0-bin-hadoop3.2 && \
+	rm -rf /opt/spark/jars/hive-beeline-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-cli-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-common-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-exec-2.3.7-core.jar && \
+    rm -rf /opt/spark/jars/hive-jdbc-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-llap-common-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-metastore-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-serde-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-shims-0.23-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-shims-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-shims-common-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-shims-scheduler-2.3.7.jar && \
+    rm -rf /opt/spark/jars/hive-vector-code-gen-2.3.7.jar && \
     mkdir -p /opt/spark/work-dir && \
     touch /opt/spark/RELEASE && \
     rm /bin/sh && \
@@ -26,6 +39,7 @@ RUN set -ex && \
     echo "auth required pam_wheel.so use_uid" >> /etc/pam.d/su && \
     chgrp root /etc/passwd && chmod ug+rw /etc/passwd && \
     rm -rf /var/cache/apt/*
+COPY jars /opt/spark/jars
 
 ENV SPARK_HOME /opt/spark
 
