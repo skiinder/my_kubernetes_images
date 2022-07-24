@@ -8,8 +8,10 @@ RUN curl -L https://archive.apache.org/dist/hadoop/common/hadoop-3.1.3/hadoop-3.
 	mv apache-hive-3.1.2-bin /opt/hive && \
 	rm -rf /opt/hive/lib/hive-exec-3.1.2.jar /opt/hive/lib/hive-spark-client-3.1.2.jar && \
 	ln -s /opt/spark/jars/hive-exec-3.1.2.jar /opt/hive/lib/hive-exec-3.1.2.jar && \
+	rm -rf /opt/hadoop/etc/hadoop/core-site.xml && \
 	ln -s /opt/hive/conf/core-site.xml /opt/hadoop/etc/hadoop/core-site.xml && \
-	ls -s /opt/hive/conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
+	mkdir -p /opt/spark/conf && \
+	ln -s /opt/hive/conf/spark-defaults.conf /opt/spark/conf/spark-defaults.conf
 
 COPY jars /opt/hive/lib
 COPY entrypoint.sh /opt
