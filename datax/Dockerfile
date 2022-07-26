@@ -1,5 +1,6 @@
 FROM openjdk:8-jre-buster
 RUN set -ex && \
+    sed -i 's/http:\/\/deb.\(.*\)/https:\/\/deb.\1/g' /etc/apt/sources.list && \
     # echo 'deb http://mirrors.aliyun.com/debian/ buster main non-free contrib' > /etc/apt/sources.list && \
     # echo 'deb-src http://mirrors.aliyun.com/debian/ buster main non-free contrib' >> /etc/apt/sources.list && \
     # echo 'deb http://mirrors.aliyun.com/debian-security buster/updates main' >> /etc/apt/sources.list && \
@@ -10,7 +11,7 @@ RUN set -ex && \
     # echo 'deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib' >> /etc/apt/sources.list && \
     apt-get update && \
     ln -s /lib /lib64 && \
-    apt install -y bash tini libc6 libpam-modules libnss3 iputils-ping python python-mysqldb && \
+    apt install -y bash tini libc6 libpam-modules krb5-user libnss3 procps iputils-ping curl libsnappy-dev libssl-dev python python-mysqldb && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
     rm -rf /var/cache/apt/* && \
@@ -22,4 +23,4 @@ ENV DATAX_HOME=/opt/datax
 
 WORKDIR /opt/datax
 
-ENTRYPOINT [ "bin/datax.py", "job/job.json" ]
+ENTRYPOINT [ "/opt/datax/bin/datax.py", "/opt/datax/job/job.json" ]

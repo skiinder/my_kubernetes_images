@@ -1,0 +1,42 @@
+name: Spark Image CI
+on:
+  push:
+    paths: 
+      - spark/**
+      - .github/workflows/spark**
+      - build-all/**
+
+env:
+  REGISTRY: registry.cn-zhangjiakou.aliyuncs.com
+  NAMESPACE: skiinder
+  IMAGE: spark-github
+  SPARK_VERSION: '3.3.0'
+  HADOOP_VERSION: '3.3.2'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          architecture: x64
+      - name: Prepare Spark
+        run: bash spark/build-only-hadoop.sh
+      - name: Build Image
+        run: |
+          TAG="${SPARK_VERSION}-hadoop-${HADOOP_VERSION}"
+          docker login \
+            --username=${{ secrets.DOCKER_USERNAME }} \
+            --password=${{ secrets.DOCKER_PASSWORD }} \
+            ${REGISTRY}
+          cd spark
+          docker build . --file Dockerfile \
+            --tag ${REGISTRY}/${NAMESPACE}/${IMAGE}:${TAG} \
+            --tag ${REGISTRY}/${NAMESPACE}/${IMAGE}:latest
+          docker push ${REGISTRY}/${NAMESPACE}/${IMAGE}:${TAG}
+          docker push ${REGISTRY}/${NAMESPACE}/${IMAGE}:latest

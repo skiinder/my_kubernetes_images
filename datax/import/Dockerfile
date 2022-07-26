@@ -9,4 +9,4 @@ COPY datax /opt/datax
 WORKDIR /opt/datax
 RUN chmod +x entrypoint.sh generate_import_config.py
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "/opt/datax/entrypoint.sh" ]
