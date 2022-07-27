@@ -8,8 +8,8 @@ export MAVEN_HOME="${WORK_DIR}/apache-maven-${MVN_VERSION}"
 # pull hive source
 curl -L "https://dlcdn.apache.org/hive/hive-${HIVE_VERSION}/apache-hive-${HIVE_VERSION}-src.tar.gz" | tar zx
 cd "apache-hive-${HIVE_VERSION}-src"
-git apply "${WORK_DIR}/spark-3.patch"
-git apply "${WORK_DIR}/hive-19316.patch"
+git apply ${WORK_DIR}/spark-3.patch
+git apply ${WORK_DIR}/hive-19316.patch
 
 # build hive
 "$MAVEN_HOME/bin/mvn" clean package -Dspark.version=${SPARK_VERSION} -Pdist -DskipTests -Dmaven.javadoc.skip=true
