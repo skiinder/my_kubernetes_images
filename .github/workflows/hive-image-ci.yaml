@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: hive-package
-          path: hive/apache-hive-${HIVE_VERSION}-src/packaging/target/apache-hive-${HIVE_VERSION}-bin.tar.gz
+          path: hive/hive.tar.gz
       - name: Build Image
         run: |
           TAG="${HIVE_VERSION}"
