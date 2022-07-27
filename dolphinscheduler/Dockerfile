@@ -16,6 +16,8 @@ RUN set -ex && \
     chmod +x /usr/bin/kubectl
 
 COPY dolphinscheduler /opt/dolphinscheduler
+COPY entrypoint.sh /opt/dolphinscheduler/
+COPY install.sh /opt/dolphinscheduler/
 
 RUN chmod +x /opt/dolphinscheduler/entrypoint.sh /opt/dolphinscheduler/install.sh
 
