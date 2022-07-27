@@ -1,17 +1,20 @@
-name: Spark Image CI
+name: DataX Import Image CI
 on:
   push:
     paths: 
-      - spark/**
-      - .github/workflows/spark-image-ci.yaml
+      - datax/import/**
+      - .github/workflows/datax-import-image-ci.yaml
       - build-all/**
+  workflow_run:
+    workflows: 
+      - DataX Image CI
+    types:
+      - completed
 
 env:
   REGISTRY: registry.cn-zhangjiakou.aliyuncs.com
   NAMESPACE: skiinder
-  IMAGE: spark-github
-  SPARK_VERSION: '3.3.0'
-  HADOOP_VERSION: '3.3.2'
+  IMAGE: datax-import-github
   JUICEFS_VERSION: '1.0.0-rc3'
 
 jobs:
@@ -20,24 +23,15 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-          architecture: x64
-      - name: Prepare Spark
-        run: bash spark/build-only-hadoop.sh
+      - name: Prepare DataX Import
+        run: bash datax/import/prepare.sh
       - name: Build Image
         run: |
-          TAG="${SPARK_VERSION}-hadoop-${HADOOP_VERSION}"
           docker login \
             --username=${{ secrets.DOCKER_USERNAME }} \
             --password=${{ secrets.DOCKER_PASSWORD }} \
             ${REGISTRY}
-          cd spark
+          cd datax/import
           docker build . --file Dockerfile \
-            --tag ${REGISTRY}/${NAMESPACE}/${IMAGE}:${TAG} \
             --tag ${REGISTRY}/${NAMESPACE}/${IMAGE}:latest
-          docker push ${REGISTRY}/${NAMESPACE}/${IMAGE}:${TAG}
           docker push ${REGISTRY}/${NAMESPACE}/${IMAGE}:latest

@@ -24,8 +24,7 @@ COPY spark/examples /opt/spark/examples
 COPY spark/kubernetes/tests /opt/spark/tests
 COPY spark/data /opt/spark/data
 
-RUN curl -L https://github.com/juicedata/juicefs/releases/download/v1.0.0-rc3/juicefs-hadoop-1.0.0-rc3.jar -o /opt/spark/jars/juicefs-hadoop.jar && \
-    chmod g+w /opt/spark/work-dir && \
+RUN chmod g+w /opt/spark/work-dir && \
     chmod a+x /opt/spark/decom.sh && \
     chmod a+x /opt/spark/entrypoint.sh
 
