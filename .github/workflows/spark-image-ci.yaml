@@ -28,6 +28,11 @@ jobs:
           architecture: x64
       - name: Prepare Spark
         run: bash spark/build-only-hadoop.sh
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: spark-package
+          path: spark/spark
       - name: Build Image
         run: |
           TAG="${SPARK_VERSION}-hadoop-${HADOOP_VERSION}"

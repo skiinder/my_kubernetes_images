@@ -36,6 +36,11 @@ jobs:
         run: |
           bash hive/get-hadoop.sh
           bash hive/build.sh
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
+        with:
+          name: hive-package
+          path: hive/hive
       - name: Build Image
         run: |
           TAG="${HIVE_VERSION}"
