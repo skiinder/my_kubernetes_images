@@ -9,6 +9,7 @@ export MAVEN_HOME="${WORK_DIR}/apache-maven-${MVN_VERSION}"
 # pull hive source
 curl -L "https://dlcdn.apache.org/hive/hive-${HIVE_VERSION}/apache-hive-${HIVE_VERSION}-src.tar.gz" | tar zx
 cd "apache-hive-${HIVE_VERSION}-src"
+git init
 git apply -v ../spark-3.patch
 git apply -v ../hive-19316.patch
 
