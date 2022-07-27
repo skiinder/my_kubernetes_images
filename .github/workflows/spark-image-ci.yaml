@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: spark-package
-          path: spark/spark
+          path: spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz
       - name: Build Image
         run: |
           TAG="${SPARK_VERSION}-hadoop-${HADOOP_VERSION}"

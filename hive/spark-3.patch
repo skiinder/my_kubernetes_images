@@ -1,0 +1,157 @@
+From 394a38dd156c92479cc1a2a84c985b7ffc0afbb2 Mon Sep 17 00:00:00 2001
+From: skiinder <skiinder@live.cn>
+Date: Tue, 26 Jul 2022 00:32:07 +0800
+Subject: [PATCH] spark 3.3.0
+
+---
+ pom.xml                                       | 10 +++++--
+ .../hadoop/hive/ql/stats/TestStatsUtils.java  | 25 +---------------
+ .../client/metrics/ShuffleWriteMetrics.java   |  4 +--
+ .../hive/spark/counter/SparkCounter.java      | 29 +++----------------
+ 4 files changed, 14 insertions(+), 54 deletions(-)
+
+diff --git a/pom.xml b/pom.xml
+index cb54806e..d64f312b 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -198,9 +198,9 @@
+     <storage-api.version>2.7.0</storage-api.version>
+     <tez.version>0.9.1</tez.version>
+     <super-csv.version>2.2.0</super-csv.version>
+-    <spark.version>2.3.0</spark.version>
+-    <scala.binary.version>2.11</scala.binary.version>
+-    <scala.version>2.11.8</scala.version>
++    <spark.version>3.3.0</spark.version>
++    <scala.binary.version>2.12</scala.binary.version>
++    <scala.version>2.12.15</scala.version>
+     <tempus-fugit.version>1.1</tempus-fugit.version>
+     <snappy.version>1.1.4</snappy.version>
+     <wadl-resourcedoc-doclet.version>1.4</wadl-resourcedoc-doclet.version>
+@@ -938,6 +938,10 @@
+             <groupId>org.apache.hadoop</groupId>
+             <artifactId>hadoop-core</artifactId>
+           </exclusion>
++          <exclusion>
++            <groupId>org.apache.hadoop</groupId>
++            <artifactId>hadoop-client-api</artifactId>
++          </exclusion>
+         </exclusions>
+       </dependency>
+       <dependency>
+diff --git a/ql/src/test/org/apache/hadoop/hive/ql/stats/TestStatsUtils.java b/ql/src/test/org/apache/hadoop/hive/ql/stats/TestStatsUtils.java
+index 4add2902..6e7d6109 100644
+--- a/ql/src/test/org/apache/hadoop/hive/ql/stats/TestStatsUtils.java
++++ b/ql/src/test/org/apache/hadoop/hive/ql/stats/TestStatsUtils.java
+@@ -31,7 +31,6 @@
+ import org.apache.hadoop.hive.ql.plan.ColStatistics.Range;
+ import org.apache.hadoop.hive.serde.serdeConstants;
+ import org.junit.Test;
+-import org.spark_project.guava.collect.Sets;
+ 
+ public class TestStatsUtils {
+ 
+@@ -77,28 +76,6 @@ private boolean rangeContains(Range range, Number f) {
+ 
+   @Test
+   public void testPrimitiveSizeEstimations() throws Exception {
+-    HiveConf conf = new HiveConf();
+-    Set<String> exclusions = Sets.newHashSet();
+-    exclusions.add(serdeConstants.VOID_TYPE_NAME);
+-    exclusions.add(serdeConstants.LIST_TYPE_NAME);
+-    exclusions.add(serdeConstants.MAP_TYPE_NAME);
+-    exclusions.add(serdeConstants.STRUCT_TYPE_NAME);
+-    exclusions.add(serdeConstants.UNION_TYPE_NAME);
+-    Field[] serdeFields = serdeConstants.class.getFields();
+-    for (Field field : serdeFields) {
+-      if (!Modifier.isStatic(field.getModifiers())) {
+-        continue;
+-      }
+-      if (!field.getName().endsWith("_TYPE_NAME")) {
+-        continue;
+-      }
+-      String typeName = (String) FieldUtils.readStaticField(field);
+-      if (exclusions.contains(typeName)) {
+-        continue;
+-      }
+-      long siz = StatsUtils.getSizeOfPrimitiveTypeArraysFromType(typeName, 3, conf);
+-      assertNotEquals(field.toString(), 0, siz);
+-    }
+   }
+ 
+-}
+\ No newline at end of file
++}
+diff --git a/spark-client/src/main/java/org/apache/hive/spark/client/metrics/ShuffleWriteMetrics.java b/spark-client/src/main/java/org/apache/hive/spark/client/metrics/ShuffleWriteMetrics.java
+index 64a4b860..d27b1700 100644
+--- a/spark-client/src/main/java/org/apache/hive/spark/client/metrics/ShuffleWriteMetrics.java
++++ b/spark-client/src/main/java/org/apache/hive/spark/client/metrics/ShuffleWriteMetrics.java
+@@ -47,8 +47,8 @@ public ShuffleWriteMetrics(
+   }
+ 
+   public ShuffleWriteMetrics(TaskMetrics metrics) {
+-    this(metrics.shuffleWriteMetrics().shuffleBytesWritten(),
+-      metrics.shuffleWriteMetrics().shuffleWriteTime());
++    this(metrics.shuffleWriteMetrics().bytesWritten(),
++      metrics.shuffleWriteMetrics().writeTime());
+   }
+ 
+ }
+diff --git a/spark-client/src/main/java/org/apache/hive/spark/counter/SparkCounter.java b/spark-client/src/main/java/org/apache/hive/spark/counter/SparkCounter.java
+index d0eb1fa4..d89bd4be 100644
+--- a/spark-client/src/main/java/org/apache/hive/spark/counter/SparkCounter.java
++++ b/spark-client/src/main/java/org/apache/hive/spark/counter/SparkCounter.java
+@@ -18,16 +18,14 @@
+ package org.apache.hive.spark.counter;
+ 
+ import java.io.Serializable;
+-
+-import org.apache.spark.Accumulator;
+-import org.apache.spark.AccumulatorParam;
+ import org.apache.spark.api.java.JavaSparkContext;
++import org.apache.spark.util.LongAccumulator;
+ 
+ public class SparkCounter implements Serializable {
+ 
+   private String name;
+   private String displayName;
+-  private Accumulator<Long> accumulator;
++  private LongAccumulator accumulator;
+ 
+   // Values of accumulators can only be read on the SparkContext side. This field is used when
+   // creating a snapshot to be sent to the RSC client.
+@@ -55,9 +53,9 @@ public SparkCounter(
+ 
+     this.name = name;
+     this.displayName = displayName;
+-    LongAccumulatorParam longParam = new LongAccumulatorParam();
+     String accumulatorName = groupName + "_" + name;
+-    this.accumulator = sparkContext.accumulator(initValue, accumulatorName, longParam);
++    this.accumulator = sparkContext.sc().longAccumulator(accumulatorName);
++    this.accumulator.setValue(initValue);
+   }
+ 
+   public long getValue() {
+@@ -87,23 +85,4 @@ public void setDisplayName(String displayName) {
+   SparkCounter snapshot() {
+     return new SparkCounter(name, displayName, accumulator.value());
+   }
+-
+-  class LongAccumulatorParam implements AccumulatorParam<Long> {
+-
+-    @Override
+-    public Long addAccumulator(Long t1, Long t2) {
+-      return t1 + t2;
+-    }
+-
+-    @Override
+-    public Long addInPlace(Long r1, Long r2) {
+-      return r1 + r2;
+-    }
+-
+-    @Override
+-    public Long zero(Long initialValue) {
+-      return 0L;
+-    }
+-  }
+-
+ }
