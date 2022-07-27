@@ -12,7 +12,7 @@ curl -L https://github.com/skiinder/hive/commit/394a38dd156c92479cc1a2a84c985b7f
 curl -L https://github.com/skiinder/hive/commit/782d5fbc04db32345905c64479a76a749747baeb.patch | git apply
 
 # build hive
-"$MAVEN_HOME/bin/mvn" clean package -Pspark.version=${SPARK_VERSION} -Pdist -DskipTests -Dmaven.javadoc.skip=true
+"$MAVEN_HOME/bin/mvn" clean package -Dspark.version=${SPARK_VERSION} -Pdist -DskipTests -Dmaven.javadoc.skip=true
 tar zxf "packaging/target/apache-hive-${HIVE_VERSION}-bin.tar.gz"
 curl -L "https://repo.maven.apache.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" \
      -o "apache-hive-${HIVE_VERSION}-bin/lib/mysql-connector-java.jar"
