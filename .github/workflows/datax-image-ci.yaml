@@ -10,6 +10,8 @@ env:
   REGISTRY: registry.cn-zhangjiakou.aliyuncs.com
   NAMESPACE: skiinder
   IMAGE: datax-github
+  DATAX_VERSION: '20220530'
+  JUICEFS_VERSION: 1.0.0-rc3
 
 jobs:
   build:
@@ -17,6 +19,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+      - name: Prepare DataX
+        run: bash datax/prepare.sh
       - name: Build Image
         run: |
           docker login \

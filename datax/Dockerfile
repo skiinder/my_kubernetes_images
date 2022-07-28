@@ -6,10 +6,9 @@ RUN set -ex && \
     apt install -y bash tini libc6 libpam-modules krb5-user libnss3 procps iputils-ping curl libsnappy-dev libssl-dev python python-mysqldb && \
     rm /bin/sh && \
     ln -sv /bin/bash /bin/sh && \
-    rm -rf /var/cache/apt/* && \
-    curl -L https://datax-opensource.oss-cn-hangzhou.aliyuncs.com/20220530/datax.tar.gz | tar -zxC /opt && \
-    cd /opt/datax && \
-    curl -L https://raw.githubusercontent.com/skiinder/my_kubernetes_images/main/scripts/filededup.sh | bash -
+    rm -rf /var/cache/apt/*
+
+COPY datax /opt
 
 ENV DATAX_HOME=/opt/datax
 
