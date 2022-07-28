@@ -8,7 +8,7 @@ RUN set -ex && \
     ln -sv /bin/bash /bin/sh && \
     rm -rf /var/cache/apt/*
 
-COPY datax /opt
+COPY datax /opt/datax
 
 ENV DATAX_HOME=/opt/datax
 
