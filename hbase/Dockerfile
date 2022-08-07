@@ -13,7 +13,7 @@ RUN set -ex && \
     rm -rf /var/cache/apt/* && \
     mkdir /opt/conf
 
-COPY hbase /opt
+COPY hbase /opt/hbase
 
 RUN set -ex && \
     mv /opt/hbase/conf/hbase-env.sh /opt/conf/hbase-env.sh && \
