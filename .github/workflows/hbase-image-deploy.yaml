@@ -38,7 +38,7 @@ jobs:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - name: Deploy Hbase Image
         run: |
-          nohup ssh -D 10800 -q -N root@${{ secrets.SSH_HOST }} >/dev/null 2>&1 &
+          ssh -f -D 10800 -N root@121.89.214.122
           kubectl apply -f hbase/hbase.yaml
 #      - name: Deploy Hbase Image
 #        uses: azure/k8s-deploy@v3.1
