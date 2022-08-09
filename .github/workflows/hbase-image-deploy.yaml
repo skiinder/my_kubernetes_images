@@ -36,14 +36,12 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Open SSH Tunnel
+        run: ssh -f -o StrictHostKeyChecking=no-D 10800 -N root@121.89.214.122
       - name: Deploy Hbase Image
-        run: |
-          ssh -f -o StrictHostKeyChecking=no -D 10800 -N root@121.89.214.122
-          kubectl apply -f hbase/hbase.yaml
-#      - name: Deploy Hbase Image
-#        uses: azure/k8s-deploy@v3.1
-#        with:
-#          action: deploy
-#          strategy: basic
-#          namespace: 'bigdata'
-#          manifests: hbase/hbase.yaml
+        uses: azure/k8s-deploy@v3.1
+        with:
+          action: deploy
+          strategy: basic
+          namespace: 'bigdata'
+          manifests: hbase/hbase.yaml

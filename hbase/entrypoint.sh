@@ -3,7 +3,7 @@ CLASS=$1
 shift
 case "$CLASS" in
 'master' | 'regionserver')
-  CMD=(${HBASE_HOME}/bin/hbase-daemon.sh foreground_start ${CLASS})
+  CMD=(${HBASE_HOME}/bin/hbase ${CLASS} start)
   ;;
 *)
   CMD=(ping www.baidu.com)

@@ -21,6 +21,7 @@ spec:
       app.kubernetes.io/name: hbase
       app.kubernetes.io/component: master
   replicas: 2
+  serviceName: hbase
   template:
     metadata:
       labels:
@@ -41,14 +42,6 @@ spec:
             - containerPort: 16010
               name: info-port
               protocol: TCP
-          livenessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 16000
-            timeoutSeconds: 1
       serviceAccountName: hbase
       automountServiceAccountToken: true
       volumes:
@@ -70,6 +63,7 @@ spec:
       app.kubernetes.io/name: hbase
       app.kubernetes.io/component: regionserver
   replicas: 2
+  serviceName: hbase
   template:
     metadata:
       labels:
@@ -90,14 +84,6 @@ spec:
             - containerPort: 16030
               name: rs-info-port
               protocol: TCP
-          livenessProbe:
-            failureThreshold: 3
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            successThreshold: 1
-            tcpSocket:
-              port: 16020
-            timeoutSeconds: 1
       serviceAccountName: hbase
       automountServiceAccountToken: true
       volumes:
@@ -155,7 +141,7 @@ data:
       <property><name>hadoop.proxyuser.root.users</name><value>*</value></property>
     </configuration>
   hbase-env.sh: export HBASE_MANAGES_ZK=false
-  hive-site.xml: |-
+  hbase-site.xml: |-
     <?xml version="1.0"?>
     <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
     <configuration>
