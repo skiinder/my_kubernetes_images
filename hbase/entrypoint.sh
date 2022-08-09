@@ -6,7 +6,7 @@ case "$CLASS" in
   CMD=(${HBASE_HOME}/bin/hbase ${CLASS} start)
   ;;
 'queryserver')
-  CMD=(python3 ${HBASE_HOME}/queryserver/bin/queryserver.py)
+  CMD=(${HBASE_HOME}/queryserver/bin/queryserver.py)
   ;;
 *)
   CMD=(ping www.baidu.com)
