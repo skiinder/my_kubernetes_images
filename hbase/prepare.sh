@@ -16,5 +16,7 @@ curl -L "https://repo.maven.apache.org/maven2/org/apache/phoenix/phoenix-server-
 -o "hbase-${HBASE_VERSION}/lib/phoenix-server-hbase-${HBASE_VERSION:0:3}-${PHOENIX_VERSION}.jar"
 curl -L "https://repo.maven.apache.org/maven2/org/apache/phoenix/phoenix-queryserver-assembly/6.0.0/phoenix-queryserver-assembly-6.0.0.tar.gz" | tar zx
 mv "phoenix-queryserver-6.0.0" "hbase-${HBASE_VERSION}/queryserver"
+curl -L "https://repo.maven.apache.org/maven2/org/apache/phoenix/phoenix-client-hbase-${HBASE_VERSION:0:3}/${PHOENIX_VERSION}/phoenix-client-hbase-${HBASE_VERSION:0:3}-${PHOENIX_VERSION}.jar" \
+-o "hbase-${HBASE_VERSION}/queryserver/phoenix-client-hbase-${HBASE_VERSION:0:3}-${PHOENIX_VERSION}.jar"
 mv "hbase-assembly/target/hbase-${HBASE_VERSION}-bin.tar.gz" "${WORK_DIR}/hbase.tgz"
 mv "hbase-${HBASE_VERSION}" "${WORK_DIR}/hbase"
