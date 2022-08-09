@@ -218,4 +218,5 @@ data:
       <property><name>hbase.regionserver.wal.codec</name><value>org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec</value></property>
       <property><name>hbase.region.server.rpc.scheduler.factory.class</name><value>org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory</value></property>
       <property><name>hbase.rpc.controllerfactory.class</name><value>org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory</value></property>
+      <property><name>phoenix.schema.isNamespaceMappingEnabled</name><value>true</value></property>
     </configuration>
