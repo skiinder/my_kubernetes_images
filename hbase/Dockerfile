@@ -14,13 +14,16 @@ RUN set -ex && \
     mkdir /opt/conf
 
 COPY hbase /opt/hbase
+COPY entrypoint.sh /opt/hbase/entrypoint.sh
 
 RUN set -ex && \
+    chmod +x /opt/hbase/entrypoint.sh && \
     mv /opt/hbase/conf/hbase-env.sh /opt/conf/hbase-env.sh && \
     ln -s /opt/conf/hbase-env.sh /opt/hbase/conf/hbase-env.sh && \
     mv /opt/hbase/conf/hbase-site.xml /opt/conf/hbase-site.xml && \
-    ln -s /opt/conf/hbase-site.xml /opt/hbase/conf/hbase-site.xml
+    ln -s /opt/conf/hbase-site.xml /opt/hbase/conf/hbase-site.xml && \
+    ln -s /opt/conf/core-site.xml /opt/hbase/conf/core-site.xml
 
 ENV HBASE_HOME /opt/hbase
 
-ENTRYPOINT [ "ping", "www.baidu.com" ]
+ENTRYPOINT [ "/opt/hbase/entrypoint.sh" ]

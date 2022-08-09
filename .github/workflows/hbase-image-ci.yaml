@@ -2,7 +2,9 @@ name: Hbase Image CI
 on:
   push:
     paths:
-      - hbase/**
+      - hbase/Dockerfile
+      - hbase/entrypoint.sh
+      - hbase/prepare.sh
       - .github/workflows/hbase-image-ci.yaml
       - build-all/**
 

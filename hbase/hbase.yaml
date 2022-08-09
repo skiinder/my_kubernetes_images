@@ -1,0 +1,165 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: hbase
+  name: hbase
+  namespace: bigdata
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hbase-master
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hbase
+    app.kubernetes.io/component: master
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hbase
+      app.kubernetes.io/component: master
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hbase
+        app.kubernetes.io/component: master
+    spec:
+      containers:
+        - name: master
+          image: registry-vpc.cn-zhangjiakou.aliyuncs.com/skiinder/hbase-github:latest
+          volumeMounts:
+            - name: config
+              mountPath: /opt/conf
+          args: ["master"]
+          ports:
+            - containerPort: 16000
+              name: port
+              protocol: TCP
+            - containerPort: 16010
+              name: info-port
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 16000
+            timeoutSeconds: 1
+      serviceAccountName: hbase
+      automountServiceAccountToken: true
+      volumes:
+        - name: config
+          configMap:
+            name: hbaseconf
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hbase-regionserver
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hbase
+    app.kubernetes.io/component: regionserver
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hbase
+      app.kubernetes.io/component: regionserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hbase
+        app.kubernetes.io/component: regionserver
+    spec:
+      containers:
+        - name: regionserver
+          image: registry-vpc.cn-zhangjiakou.aliyuncs.com/skiinder/hbase-github:latest
+          volumeMounts:
+            - name: config
+              mountPath: /opt/conf
+          args: ["regionserver"]
+          ports:
+            - containerPort: 16020
+              name: rs-port
+              protocol: TCP
+            - containerPort: 16030
+              name: rs-info-port
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 16020
+            timeoutSeconds: 1
+      serviceAccountName: hbase
+      automountServiceAccountToken: true
+      volumes:
+        - name: config
+          configMap:
+            name: hbaseconf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hbase
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hbase
+spec:
+  selector:
+    app.kubernetes.io/name: hbase
+  ports:
+    - protocol: TCP
+      port: 16010
+      targetPort: 16010
+      name: info-port
+    - protocol: TCP
+      port: 16000
+      targetPort: 16000
+      name: master-port
+    - protocol: TCP
+      port: 16020
+      targetPort: 16020
+      name: rs-port
+    - protocol: TCP
+      port: 16030
+      targetPort: 16030
+      name: rs-info-port
+  clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hbaseconf
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hive
+data:
+  core-site.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    <configuration>
+      <property><name>fs.defaultFS</name><value>jfs://myjfs</value></property>
+      <property><name>fs.jfs.impl</name><value>io.juicefs.JuiceFileSystem</value></property>
+      <property><name>fs.AbstractFileSystem.jfs.impl</name><value>io.juicefs.JuiceFS</value></property>
+      <property><name>juicefs.meta</name><value>redis://redis-master.bigdata:6379/1</value></property>
+      <property><name>hadoop.proxyuser.root.hosts</name><value>*</value></property>
+      <property><name>hadoop.proxyuser.root.groups</name><value>*</value></property>
+      <property><name>hadoop.proxyuser.root.users</name><value>*</value></property>
+    </configuration>
+  hbase-env.sh: export HBASE_MANAGES_ZK=false
+  hive-site.xml: |-
+    <?xml version="1.0"?>
+    <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    <configuration>
+      <property><name>hbase.cluster.distributed</name><value>true</value></property>
+      <property><name>hbase.rootdir</name><value>jfs://myjfs/hbase</value></property>
+      <property><name>hbase.zookeeper.quorum</name><value>zookeeper.bigdata</value></property>
+    </configuration>

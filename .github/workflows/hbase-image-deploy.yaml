@@ -1,0 +1,47 @@
+name: Hbase Image Deploy
+on:
+  push:
+    paths:
+      - .github/workflows/hbase-image-deploy.yaml
+      - hbase/kustomization.yaml
+  workflow_run:
+    workflows:
+      - Hbase Image CI
+    types:
+      - completed
+
+env:
+  REGISTRY: registry.cn-zhangjiakou.aliyuncs.com
+  NAMESPACE: skiinder
+  IMAGE: hbase-github
+  HBASE_VERSION: '2.4.13'
+  HADOOP_VERSION: '3.3.2'
+  JUICEFS_VERSION: '1.0.0-rc3'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+          with:
+            key: ${{ secrets.SSH_KEY }}
+            name: id_rsa
+            known_hosts: unnecessary
+            if_key_exists: replace
+      - name: Open SSH Tunnel
+        run: nohup ssh -D 10800 -q -N root@${{ secrets.SSH_HOST }} >/dev/null 2>&1 &
+      - name: Set Kubernetes Context
+        uses: azure/k8s-set-context@v2
+          with:
+            method: kubeconfig
+            kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy Hbase Image
+        uses: azure/k8s-deploy@v3.1
+          with:
+            action: deploy
+            namespace: 'bigdata'
+            manifests: hbase/hbase.yaml
