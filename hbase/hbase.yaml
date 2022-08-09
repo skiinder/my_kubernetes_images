@@ -105,7 +105,6 @@ spec:
       app.kubernetes.io/name: hbase
       app.kubernetes.io/component: queryserver
   replicas: 2
-  serviceName: hbase
   template:
     metadata:
       labels:
@@ -145,11 +144,25 @@ spec:
       port: 16010
       targetPort: 16010
       name: info-port
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: queryserver
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hbase
+    app.kubernetes.io/component: queryserver
+spec:
+  selector:
+    app.kubernetes.io/name: hbase
+    app.kubernetes.io/component: queryserver
+  ports:
     - protocol: TCP
       port: 8765
       targetPort: 8765
       name: qs-port
-  clusterIP: None
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -159,7 +172,7 @@ metadata:
 spec:
   defaultBackend:
     service:
-      name: hbase
+      name: queryserver
       port:
         number: 8765
   rules:
@@ -168,7 +181,7 @@ spec:
       paths:
       - backend:
           service:
-            name: hbase
+            name: queryserver
             port:
               number: 8765
         path: /(.*)
