@@ -31,16 +31,19 @@ jobs:
           name: id_rsa
           known_hosts: unnecessary
           if_key_exists: replace
-      - name: Open SSH Tunnel
-        run: nohup ssh -D 10800 -q -N root@${{ secrets.SSH_HOST }} >/dev/null 2>&1 &
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v2
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - name: Deploy Hbase Image
-        uses: azure/k8s-deploy@v3.1
-        with:
-          action: deploy
-          namespace: 'bigdata'
-          manifests: hbase/hbase.yaml
+        run: |
+          nohup ssh -D 10800 -q -N root@${{ secrets.SSH_HOST }} >/dev/null 2>&1 &
+          kubectl apply -f hbase/hbase.yaml
+#      - name: Deploy Hbase Image
+#        uses: azure/k8s-deploy@v3.1
+#        with:
+#          action: deploy
+#          strategy: basic
+#          namespace: 'bigdata'
+#          manifests: hbase/hbase.yaml
