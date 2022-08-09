@@ -27,21 +27,21 @@ jobs:
         uses: actions/checkout@v3
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
-          with:
-            key: ${{ secrets.SSH_KEY }}
-            name: id_rsa
-            known_hosts: unnecessary
-            if_key_exists: replace
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          name: id_rsa
+          known_hosts: unnecessary
+          if_key_exists: replace
       - name: Open SSH Tunnel
         run: nohup ssh -D 10800 -q -N root@${{ secrets.SSH_HOST }} >/dev/null 2>&1 &
       - name: Set Kubernetes Context
         uses: azure/k8s-set-context@v2
-          with:
-            method: kubeconfig
-            kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - name: Deploy Hbase Image
         uses: azure/k8s-deploy@v3.1
-          with:
-            action: deploy
-            namespace: 'bigdata'
-            manifests: hbase/hbase.yaml
+        with:
+          action: deploy
+          namespace: 'bigdata'
+          manifests: hbase/hbase.yaml
