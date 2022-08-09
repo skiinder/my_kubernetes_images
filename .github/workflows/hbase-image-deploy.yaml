@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - .github/workflows/hbase-image-deploy.yaml
-      - hbase/kustomization.yaml
+      - hbase/hbase.yaml
   workflow_run:
     workflows:
       - Hbase Image CI
