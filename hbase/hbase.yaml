@@ -20,7 +20,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: hbase
       app.kubernetes.io/component: master
-  replicas: 2
+  replicas: 1
   serviceName: hbase
   template:
     metadata:
@@ -91,6 +91,45 @@ spec:
           configMap:
             name: hbaseconf
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hbase-queryserver
+  namespace: bigdata
+  labels:
+    app.kubernetes.io/name: hbase
+    app.kubernetes.io/component: queryserver
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hbase
+      app.kubernetes.io/component: queryserver
+  replicas: 2
+  serviceName: hbase
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hbase
+        app.kubernetes.io/component: queryserver
+    spec:
+      containers:
+        - name: queryserver
+          image: registry-vpc.cn-zhangjiakou.aliyuncs.com/skiinder/hbase-github:latest
+          volumeMounts:
+            - name: config
+              mountPath: /opt/conf
+          args: ["queryserver"]
+          ports:
+            - containerPort: 8765
+              name: qs-port
+              protocol: TCP
+      serviceAccountName: hbase
+      automountServiceAccountToken: true
+      volumes:
+        - name: config
+          configMap:
+            name: hbaseconf
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -107,18 +146,33 @@ spec:
       targetPort: 16010
       name: info-port
     - protocol: TCP
-      port: 16000
-      targetPort: 16000
-      name: master-port
-    - protocol: TCP
-      port: 16020
-      targetPort: 16020
-      name: rs-port
-    - protocol: TCP
-      port: 16030
-      targetPort: 16030
-      name: rs-info-port
+      port: 8765
+      targetPort: 8765
+      name: qs-port
   clusterIP: None
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hbase-queryserver
+  namespace: bigdata
+spec:
+  defaultBackend:
+    service:
+      name: hbase
+      port:
+        number: 8765
+  rules:
+  - host: queryserver.hadoop102
+    http:
+      paths:
+      - backend:
+          service:
+            name: hbase
+            port:
+              number: 8765
+        path: /(.*)
+        pathType: Prefix
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -148,4 +202,7 @@ data:
       <property><name>hbase.cluster.distributed</name><value>true</value></property>
       <property><name>hbase.rootdir</name><value>jfs://myjfs/hbase</value></property>
       <property><name>hbase.zookeeper.quorum</name><value>zookeeper.bigdata</value></property>
+      <property><name>hbase.regionserver.wal.codec</name><value>org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec</value></property>
+      <property><name>hbase.region.server.rpc.scheduler.factory.class</name><value>org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory</value></property>
+      <property><name>hbase.rpc.controllerfactory.class</name><value>org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory</value></property>
     </configuration>
