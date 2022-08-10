@@ -25,6 +25,8 @@ RUN set -ex && \
     ln -s /opt/conf/core-site.xml /opt/hbase/conf/core-site.xml && \
     ln -s /opt/hbase/lib/juicefs-hadoop.jar /opt/hbase/queryserver/lib/juicefs-hadoop.jar
 
-ENV HBASE_HOME /opt/hbase
+ENV HBASE_HOME=/opt/hbase
+
+ENV PATH=$PATH:$HBASE_HOME/bin
 
 ENTRYPOINT [ "/opt/hbase/entrypoint.sh" ]
