@@ -8,7 +8,7 @@ on:
     workflows:
       - Hbase Image CI
     types:
-      - completed
+      - success
 
 env:
   REGISTRY: registry.cn-zhangjiakou.aliyuncs.com
