@@ -22,7 +22,8 @@ RUN set -ex && \
     ln -s /opt/conf/hbase-env.sh /opt/hbase/conf/hbase-env.sh && \
     mv /opt/hbase/conf/hbase-site.xml /opt/conf/hbase-site.xml && \
     ln -s /opt/conf/hbase-site.xml /opt/hbase/conf/hbase-site.xml && \
-    ln -s /opt/conf/core-site.xml /opt/hbase/conf/core-site.xml
+    ln -s /opt/conf/core-site.xml /opt/hbase/conf/core-site.xml && \
+    ln -s /opt/hbase/lib/juicefs-hadoop.jar /opt/hbase/queryserver/lib/juicefs-hadoop.jar
 
 ENV HBASE_HOME /opt/hbase
 
