@@ -1,4 +1,4 @@
-name: Flume Image CI
+name: Flink-on-Hudi Image CI
 on:
   push:
     paths: 
